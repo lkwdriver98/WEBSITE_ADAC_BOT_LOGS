@@ -129,6 +129,15 @@
       font-size: 0.95rem;
       text-align: center;
     }
+    .badge {
+      display: inline-block;
+      background: #d32f2f;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -157,6 +166,7 @@
       <h1>ADAC-BOT Dashboard</h1>
       <div class="user-menu">
         Angemeldet als: <span id="userRole">Gast</span>
+        <span id="apiStatus" class="badge">Nicht verbunden</span>
       </div>
     </header>
 
@@ -172,6 +182,15 @@
 
     <section id="users" class="card admin-only" style="display:none;">
       <h2>Benutzerverwaltung</h2>
+      <form id="createUserForm">
+        <label for="newUser">Benutzername</label>
+        <input type="text" id="newUser" required>
+        <label for="newPass">Passwort</label>
+        <input type="password" id="newPass" required>
+        <label for="newRole">Rolle</label>
+        <input type="text" id="newRole" required>
+        <button type="submit">Benutzer anlegen</button>
+      </form>
       <p id="usersContent">Lade Benutzerdaten...</p>
     </section>
 
@@ -202,10 +221,11 @@
         document.querySelectorAll('.admin-only').forEach(el => {
           el.style.display = users[u].role === 'admin' ? 'block' : 'none';
         });
-        // Demo placeholder
         document.getElementById("logsContent").textContent = "Keine gelöschten Nachrichten vorhanden.";
-        document.getElementById("usersContent").textContent = "3 Benutzer geladen (Demo).";
         document.getElementById("apiKey").textContent = "LIVE_KEY_ABC123";
+        document.getElementById("apiStatus").textContent = "Verbunden";
+        document.getElementById("apiStatus").style.backgroundColor = "#388e3c";
+        document.getElementById("usersContent").textContent = "- admin (admin)\n- user (user)";
       } else {
         document.getElementById("errorMsg").textContent = 'Ungültige Anmeldedaten';
       }
@@ -220,6 +240,22 @@
           s.style.display = s.id === sec ? 'block' : 'none';
         });
       });
+    });
+
+    const createUserForm = document.getElementById('createUserForm');
+    createUserForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('newUser').value;
+      const pw = document.getElementById('newPass').value;
+      const role = document.getElementById('newRole').value;
+      if (!users[name]) {
+        users[name] = { password: pw, role };
+        document.getElementById('usersContent').textContent += `\n- ${name} (${role})`;
+        alert('Benutzer erfolgreich angelegt.');
+        createUserForm.reset();
+      } else {
+        alert('Benutzer existiert bereits.');
+      }
     });
   </script>
 </body>

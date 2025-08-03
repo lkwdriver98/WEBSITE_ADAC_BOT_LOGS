@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html_code = """<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
@@ -275,6 +275,37 @@
         s.style.display = s.id === sec ? 'block' : 'none';
       });
     });
+  });
+
+  // API-Logs laden
+  fetch("https://adac-bot-website-api.onrender.com/logs", {
+    headers: {
+      "Authorization": "1804"
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("API-Zugriff fehlgeschlagen. Code: " + response.status);
+    }
+    return response.json();
+  })
+  .then(data => {
+    const logContainer = document.querySelector("#logs");
+    const logs = data.logs || [];
+
+    const content = logs.length === 0
+      ? "<p>Keine gelöschten Nachrichten gefunden.</p>"
+      : "<ul>" + logs.map(log =>
+          `<li>[${log.time}] ${log.user} hat "${log.message}" gelöscht</li>`
+        ).join("") + "</ul>";
+
+    logContainer.innerHTML = "<h2>Gelöschte Nachrichten (Logs)</h2>" + content;
+  })
+  .catch(error => {
+    document.querySelector("#logs").innerHTML = `
+      <h2>Gelöschte Nachrichten (Logs)</h2>
+      <p style="color:red;">Fehler: ${error.message}</p>`;
+    console.error("Fehler beim Laden der Logs:", error);
   });
 </script>
 

@@ -339,6 +339,40 @@
     console.error("Fehler beim Laden der Benutzer:", error);
   });
 
+
+  // Benutzerregistrierung per API senden
+  document.getElementById("registerUserForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const username = document.getElementById("newUsername").value;
+    const password = document.getElementById("newPassword").value;
+    const role = document.getElementById("newRole").value;
+    const resultBox = document.getElementById("registerResult");
+
+    fetch("https://adac-bot-website-api.onrender.com/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "1804"
+      },
+      body: JSON.stringify({ name: username, password: password, role: role })
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Fehler beim Anlegen (Status " + res.status + ")");
+      }
+      return res.json();
+    })
+    .then(data => {
+      resultBox.style.color = "green";
+      resultBox.textContent = "Benutzer erfolgreich angelegt.";
+      document.getElementById("registerUserForm").reset();
+    })
+    .catch(err => {
+      resultBox.style.color = "red";
+      resultBox.textContent = "Fehler: " + err.message;
+    });
+  });
+
 </script>
 
 </body>

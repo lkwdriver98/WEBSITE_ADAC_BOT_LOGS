@@ -4,41 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TechFlair Enterprise Dashboard</title>
-  <style>
-    /* RESET & BOX-SIZING */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Roboto', sans-serif; background-color: #f4f6f9; color: #333; display: flex; min-height: 100vh; }
-    /* SIDEBAR */
-    nav.sidebar { width: 240px; background-color: #002b5c; color: #fff; display: flex; flex-direction: column; padding: 1rem; }
-    nav.sidebar h2 { margin-bottom: 2rem; font-size: 1.4rem; text-align: center; }
-    nav.sidebar a { color: #cfd8dc; text-decoration: none; padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 0.5rem; display: block; cursor: pointer; }
-    nav.sidebar a.active, nav.sidebar a:hover { background-color: #0056a3; color: #fff; }
-    /* MAIN CONTENT */
-    main.content { flex: 1; padding: 2rem; overflow-y: auto; display: none; }
-    header.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    header.topbar h1 { font-size: 1.75rem; color: #002b5c; }
-    header.topbar .user-menu { display: flex; align-items: center; }
-    header.topbar .user-menu img { width: 36px; height: 36px; border-radius: 50%; margin-right: 0.5rem; }
-    header.topbar .user-menu span { font-weight: 500; }
-    section.card { background-color: #fff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-    section.card h2 { font-size: 1.3rem; color: #004080; margin-bottom: 1rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.75rem 1rem; border-bottom: 1px solid #eceff1; text-align: left; }
-    th { background-color: #e1f5fe; color: #004080; font-weight: 600; }
-    tr:hover { background-color: #f1f8ff; }
-    .status-badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; }
-    .badge-user { background-color: #b2dfdb; color: #004d40; }
-    .badge-admin { background-color: #ffe082; color: #ff6f00; }
-    /* LOGIN & REGISTER MODALS */
-    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal form { background: #fff; padding: 2rem; border-radius: 8px; width: 320px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-    .modal h2 { margin-bottom: 1rem; color: #002b5c; text-align: center; }
-    .modal label { display: block; margin-top: 0.5rem; font-weight: 500; }
-    .modal input, .modal select { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #ccc; border-radius: 4px; }
-    .modal button { margin-top: 1rem; width: 100%; padding: 0.75rem; background-color: #0077b6; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
-    .modal button:hover { background-color: #005fa3; }
-    .error-msg { color: #d32f2f; margin-top: 0.5rem; font-size: 0.9rem; text-align: center; }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <!-- LOGIN MODAL -->
@@ -89,7 +55,6 @@
     <header class="topbar">
       <h1>ADAC-BOT Dashboard</h1>
       <div class="user-menu">
-        <img src="avatar-placeholder.png" alt="User Avatar">
         <span id="userRole">User</span>
       </div>
     </header>
@@ -153,21 +118,18 @@
     const API_KEY = 'YOUR_API_KEY';
     let currentRole = null;
 
-    // Benutzer-Konfiguration (Username -> {password, role})
     const users = {
       'user': { password: 'userpass', role: 'user' },
       'admin': { password: 'adminpass', role: 'admin' },
       'ADMIN': { password: 'ADAC', role: 'admin' }
     };
 
-    // Elemente
     const loginModal = document.getElementById('loginModal');
     const registerModal = document.getElementById('registerModal');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const regFormInline = document.getElementById('regFormInline');
 
-    // Modal Umschaltung
     document.getElementById('showRegister').addEventListener('click', e => {
       e.preventDefault(); loginModal.style.display='none'; registerModal.style.display='flex';
     });
@@ -175,7 +137,6 @@
       e.preventDefault(); registerModal.style.display='none'; loginModal.style.display='flex';
     });
 
-    // Login-Event
     loginForm.addEventListener('submit', e => {
       e.preventDefault();
       const u = document.getElementById('username').value;
@@ -192,7 +153,6 @@
       }
     });
 
-    // Inline-Registrierung (Admin)
     regFormInline.addEventListener('submit', async e => {
       e.preventDefault();
       const u = document.getElementById('regUsernameInline').value;
@@ -212,13 +172,11 @@
       }
     });
 
-    // Registration im Modal
     registerForm.addEventListener('submit', async e => {
       e.preventDefault();
       const u = document.getElementById('regUsername').value;
       const p = document.getElementById('regPassword').value;
       const r = document.getElementById('regRole').value;
-      // Simulierte Registrierung
       users[u] = { password: p, role: r };
       document.getElementById('regMsg').textContent = 'Registrierung erfolgreich.';
       setTimeout(() => {
@@ -226,7 +184,6 @@
       }, 1000);
     });
 
-    // Seitennavigation
     document.querySelectorAll('nav.sidebar a').forEach(link => link.addEventListener('click', () => {
       document.querySelectorAll('nav.sidebar a').forEach(l => l.classList.remove('active'));
       link.classList.add('active');
@@ -234,7 +191,6 @@
       document.querySelectorAll('main.content section.card').forEach(s => s.id === sec ? s.style.display = 'block' : s.style.display = 'none');
     }));
 
-    // Laden: Summary, Logs, Users
     async function loadSummary() {
       try {
         const res = await fetch(`${API_BASE}/summary`, { headers: { 'Authorization': `Bearer ${API_KEY}` } });
@@ -274,3 +230,4 @@
   </script>
 </body>
 </html>
+

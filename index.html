@@ -75,106 +75,16 @@
       color: #034a9b;
       margin-bottom: 1rem;
     }
-
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .modal form {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      width: 320px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .modal h2 {
-      margin-bottom: 1rem;
-      color: #021e39;
-      text-align: center;
-    }
-    .modal label {
-      display: block;
-      margin-top: 0.5rem;
-      font-weight: 500;
-    }
-    .modal input,
-    .modal select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .modal button {
-      margin-top: 1rem;
-      width: 100%;
-      padding: 0.75rem;
-      background-color: #0077b6;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    .modal button:hover {
-      background-color: #005fa3;
-    }
-    .error-msg {
-      color: #d32f2f;
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
-
-<!-- LOGIN MODAL -->
-<div id="loginModal" class="modal">
-  <form id="loginForm">
-    <h2>Login</h2>
-    <label for="username">Benutzername</label>
-    <input type="text" id="username" required>
-    <label for="password">Passwort</label>
-    <input type="password" id="password" required>
-    <button type="submit">Einloggen</button>
-    <div id="errorMsg" class="error-msg"></div>
-    <p style="text-align:center;margin-top:1rem;"><a href="#" id="showRegister">Registrieren</a></p>
-  </form>
-</div>
-
-<!-- REGISTER MODAL -->
-<div id="registerModal" class="modal" style="display:none;">
-  <form id="registerForm">
-    <h2>Registrierung</h2>
-    <label for="regUsername">Benutzername</label>
-    <input type="text" id="regUsername" required>
-    <label for="regPassword">Passwort</label>
-    <input type="password" id="regPassword" required>
-    <label for="regRole">Rolle</label>
-    <select id="regRole">
-      <option value="user">User</option>
-      <option value="admin">Admin</option>
-    </select>
-    <button type="submit">Registrieren</button>
-    <div id="regMsg" class="error-msg"></div>
-    <p style="text-align:center;margin-top:1rem;"><a href="#" id="showLogin">Zurück zum Login</a></p>
-  </form>
-</div>
 
 <!-- SIDEBAR -->
 <nav class="sidebar">
   <h2>TechFlair Inc.</h2>
   <a data-section="overview" class="active">Übersicht</a>
   <a data-section="logs">Logs</a>
-  <a data-section="register" class="admin-only">Benutzer anlegen</a>
-  <a data-section="users" class="admin-only">Benutzerverwaltung</a>
-  <a data-section="settings" class="admin-only">Einstellungen</a>
+  <a data-section="users">Benutzerverwaltung</a>
 </nav>
 
 <!-- CONTENT -->
@@ -196,76 +106,13 @@
     <p>Keine API aktiv – Demo Ansicht</p>
   </section>
 
-  <section id="register" class="card admin-only" style="display:none;">
-    <h2>Neuen Benutzer anlegen</h2>
-    <p>Nur in der API-Version aktivierbar</p>
-  </section>
-
-  <section id="users" class="card admin-only" style="display:none;">
+  <section id="users" class="card" style="display:none;">
     <h2>Benutzerverwaltung</h2>
-    <p>Benutzerliste nicht verfügbar (offline Modus)</p>
-  </section>
-
-  <section id="settings" class="card admin-only" style="display:none;">
-    <h2>Einstellungen</h2>
-    <p>API-Key: <code>DEMO_KEY</code></p>
-    <p>Reporting-Intervall: <code>7 Tage</code></p>
-    <button onclick="alert('Gespeichert (Demo)')">Speichern</button>
+    <div id="usersList">Lade Benutzerdaten...</div>
   </section>
 </main>
 
 <script>
-  const loginModal = document.getElementById('loginModal');
-  const registerModal = document.getElementById('registerModal');
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-
-  const users = {
-    admin: { password: 'adminpass', role: 'admin' },
-    user: { password: 'userpass', role: 'user' }
-  };
-
-  document.getElementById('showRegister').onclick = e => {
-    e.preventDefault();
-    loginModal.style.display = 'none';
-    registerModal.style.display = 'flex';
-  };
-  document.getElementById('showLogin').onclick = e => {
-    e.preventDefault();
-    registerModal.style.display = 'none';
-    loginModal.style.display = 'flex';
-  };
-
-  loginForm.onsubmit = e => {
-    e.preventDefault();
-    const u = username.value;
-    const p = password.value;
-    if (users[u] && users[u].password === p) {
-      loginModal.style.display = 'none';
-      document.querySelector('main.content').style.display = 'block';
-      document.getElementById('userRole').textContent = users[u].role;
-      document.querySelectorAll('.admin-only').forEach(el => {
-        el.style.display = users[u].role === 'admin' ? 'block' : 'none';
-      });
-    } else {
-      errorMsg.textContent = 'Ungültige Anmeldedaten';
-    }
-  };
-
-  registerForm.onsubmit = e => {
-    e.preventDefault();
-    const u = regUsername.value;
-    const p = regPassword.value;
-    const r = regRole.value;
-    users[u] = { password: p, role: r };
-    regMsg.textContent = 'Registrierung erfolgreich.';
-    setTimeout(() => {
-      registerModal.style.display = 'none';
-      loginModal.style.display = 'flex';
-      errorMsg.textContent = '';
-    }, 1000);
-  };
-
   document.querySelectorAll('nav.sidebar a').forEach(link => {
     link.addEventListener('click', () => {
       document.querySelectorAll('nav.sidebar a').forEach(l => l.classList.remove('active'));
@@ -277,38 +124,7 @@
     });
   });
 
-  // API-Logs laden
-  fetch("https://adac-bot-website-api.onrender.com/logs", {
-    headers: {
-      "Authorization": "1804"
-    }
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("API-Zugriff fehlgeschlagen. Code: " + response.status);
-    }
-    return response.json();
-  })
-  .then(data => {
-    const logContainer = document.querySelector("#logs");
-    const logs = data.logs || [];
-
-    const content = logs.length === 0
-      ? "<p>Keine gelöschten Nachrichten gefunden.</p>"
-      : "<ul>" + logs.map(log =>
-          `<li>[${log.time}] ${log.user} hat "${log.message}" gelöscht</li>`
-        ).join("") + "</ul>";
-
-    logContainer.innerHTML = "<h2>Gelöschte Nachrichten (Logs)</h2>" + content;
-  })
-  .catch(error => {
-    document.querySelector("#logs").innerHTML = `
-      <h2>Gelöschte Nachrichten (Logs)</h2>
-      <p style="color:red;">Fehler: ${error.message}</p>`;
-    console.error("Fehler beim Laden der Logs:", error);
-  });
-
-  // API-Benutzerliste laden
+  // Benutzerliste laden und Objekt korrekt in Array umwandeln
   fetch("https://adac-bot-website-api.onrender.com/users", {
     headers: {
       "Authorization": "1804"
@@ -321,8 +137,12 @@
     return response.json();
   })
   .then(data => {
-    const userSection = document.querySelector("#users");
-    const users = data.users || [];
+    const usersList = document.getElementById("usersList");
+    const usersObj = data.users || {};
+    const users = Object.entries(usersObj).map(([name, info]) => ({
+      name: name,
+      role: info.role || "Unbekannt"
+    }));
 
     const content = users.length === 0
       ? "<p>Keine Benutzer gefunden.</p>"
@@ -330,49 +150,13 @@
           `<li>${user.name} – Rolle: ${user.role}</li>`
         ).join("") + "</ul>";
 
-    userSection.innerHTML = "<h2>Benutzerverwaltung</h2>" + content;
+    usersList.innerHTML = content;
   })
   .catch(error => {
-    document.querySelector("#users").innerHTML = `
-      <h2>Benutzerverwaltung</h2>
+    document.getElementById("usersList").innerHTML = `
       <p style="color:red;">Fehler: ${error.message}</p>`;
     console.error("Fehler beim Laden der Benutzer:", error);
   });
-
-
-  // Benutzerregistrierung per API senden
-  document.getElementById("registerUserForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const username = document.getElementById("newUsername").value;
-    const password = document.getElementById("newPassword").value;
-    const role = document.getElementById("newRole").value;
-    const resultBox = document.getElementById("registerResult");
-
-    fetch("https://adac-bot-website-api.onrender.com/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "1804"
-      },
-      body: JSON.stringify({ name: username, password: password, role: role })
-    })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error("Fehler beim Anlegen (Status " + res.status + ")");
-      }
-      return res.json();
-    })
-    .then(data => {
-      resultBox.style.color = "green";
-      resultBox.textContent = "Benutzer erfolgreich angelegt.";
-      document.getElementById("registerUserForm").reset();
-    })
-    .catch(err => {
-      resultBox.style.color = "red";
-      resultBox.textContent = "Fehler: " + err.message;
-    });
-  });
-
 </script>
 
 </body>

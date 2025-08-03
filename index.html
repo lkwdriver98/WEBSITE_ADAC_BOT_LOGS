@@ -1,111 +1,91 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ADAC-BOT Dashboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f9; }
-    nav { width: 230px; background: #002244; color: white; height: 100vh; position: fixed; padding: 20px; }
-    nav h2 { margin-bottom: 20px; }
-    nav a { display: block; color: #aab; margin: 10px 0; text-decoration: none; }
-    nav a.active, nav a:hover { color: white; font-weight: bold; }
-    main { margin-left: 230px; padding: 20px; }
-    section { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 0 5px #ccc; margin-bottom: 20px; }
-    .hidden { display: none; }
-    .error { color: red; }
-    .api-status { float: right; color: red; font-size: 0.9em; }
+    body { margin: 0; font-family: Roboto, sans-serif; background: #f4f6f9; }
+    .modal, .hidden { display: none; }
+    .modal.active { display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    form { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    input, select, button { width: 100%; margin-top: 1rem; padding: 0.5rem; }
+    nav { width: 200px; background: #021e39; color: white; height: 100vh; position: fixed; }
+    nav a { display: block; padding: 1rem; color: #ccc; text-decoration: none; }
+    nav a.active, nav a:hover { background: #0658a6; color: white; }
+    main { margin-left: 200px; padding: 2rem; }
+    .card { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    .admin-only { display: none; }
   </style>
 </head>
 <body>
 
-<!-- Sidebar -->
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal active">
+  <form id="loginForm">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Benutzername" required>
+    <input type="password" id="password" placeholder="Passwort" required>
+    <button type="submit">Einloggen</button>
+    <p id="errorMsg" style="color:red;"></p>
+  </form>
+</div>
+
+<!-- SIDEBAR -->
 <nav>
-  <h2>TechFlair Inc.</h2>
-  <a href="#" onclick="showSection('overview')">Übersicht</a>
-  <a href="#" onclick="showSection('logs')">Logs</a>
-  <a href="#" onclick="showSection('users')">Benutzerverwaltung</a>
+  <h2 style="text-align:center; padding:1rem 0;">ADAC-BOT</h2>
+  <a href="#" class="nav-link active" data-section="overview">Übersicht</a>
+  <a href="#" class="nav-link" data-section="logs">Logs</a>
+  <a href="#" class="nav-link admin-only" data-section="users">Benutzer</a>
 </nav>
 
-<!-- Main content -->
+<!-- MAIN CONTENT -->
 <main>
-  <h1>ADAC-BOT Dashboard <span id="apiStatus" class="api-status">❌ API nicht verbunden</span></h1>
-
-  <section id="overview">
-    <h2>Wochenübersicht</h2>
-    <p id="summary">Diese Woche wurden 0 Nachrichten gelöscht (Demo).</p>
-  </section>
-
-  <section id="logs" class="hidden">
-    <h2>Gelöschte Nachrichten (Logs)</h2>
-    <p id="logsData">Lade...</p>
-  </section>
-
-  <section id="users" class="hidden">
-    <h2>Benutzerverwaltung</h2>
-    <p id="usersData">Lade...</p>
-  </section>
+  <div id="overview" class="card">Willkommen! Übersicht folgt hier.</div>
+  <div id="logs" class="card hidden">Lade Logs...</div>
+  <div id="users" class="card hidden admin-only">Benutzerverwaltung</div>
 </main>
 
 <script>
-const API_URL = "https://adac-bot-website-api.onrender.com";
-const API_KEY = "1804";
+let userRole = null;
 
-// Navigation
-function showSection(id) {
-  document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-}
-
-// Testverbindung & Logs laden
-function loadLogs() {
-  fetch(`${API_URL}/logs`, {
-    headers: { "Authorization": API_KEY }
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("API Fehler");
-    document.getElementById("apiStatus").textContent = "✅ API verbunden";
-    document.getElementById("apiStatus").style.color = "green";
-    return res.json();
-  })
-  .then(data => {
-    const logs = data.logs || [];
-    document.getElementById("logsData").innerHTML = logs.length === 0
-      ? "<p>Keine gelöschten Nachrichten gefunden.</p>"
-      : "<ul>" + logs.map(log =>
-          `<li>[${log.time}] ${log.user} löschte "${log.message}"</li>`).join("") + "</ul>";
-  })
-  .catch(err => {
-    document.getElementById("logsData").innerHTML = `<p class="error">Failed to fetch</p>`;
-    console.error(err);
+async function loginUser(username, password) {
+  const res = await fetch("https://adac-bot-website-api.onrender.com/auth", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
   });
+  if (!res.ok) throw new Error("Login fehlgeschlagen");
+  return await res.json();
 }
 
-// Benutzer laden
-function loadUsers() {
-  fetch(`${API_URL}/users`, {
-    headers: { "Authorization": API_KEY }
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("API Fehler");
-    return res.json();
-  })
-  .then(data => {
-    const users = data.users || [];
-    document.getElementById("usersData").innerHTML = users.length === 0
-      ? "<p>Keine Benutzer gefunden.</p>"
-      : "<ul>" + users.map(user =>
-          `<li>${user.name} – Rolle: ${user.role}</li>`).join("") + "</ul>";
-  })
-  .catch(err => {
-    document.getElementById("usersData").innerHTML = `<p class="error">Fehler: ${err.message}</p>`;
-    console.error(err);
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  try {
+    const data = await loginUser(username, password);
+    userRole = data.role;
+    document.getElementById("loginModal").classList.remove("active");
+    if (userRole === "admin") {
+      document.querySelectorAll(".admin-only").forEach(el => el.style.display = "block");
+    }
+  } catch (err) {
+    document.getElementById("errorMsg").textContent = "Ungültige Zugangsdaten.";
+  }
+});
+
+document.querySelectorAll(".nav-link").forEach(link => {
+  link.addEventListener("click", () => {
+    document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
+    link.classList.add("active");
+    const section = link.getAttribute("data-section");
+    document.querySelectorAll("main > div").forEach(div => div.classList.add("hidden"));
+    document.getElementById(section).classList.remove("hidden");
   });
-}
-
-// Initiale Aufrufe
-loadLogs();
-loadUsers();
+});
 </script>
 
 </body>

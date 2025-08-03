@@ -1,314 +1,141 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechFlair Enterprise Control Suite</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADAC-BOT Kontrollzentrum</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
-      color: #333;
-      display: flex;
-      min-height: 100vh;
-    }
-    nav.sidebar {
-      width: 280px;
-      background-color: #0a1e33;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      padding: 2rem 1rem;
-    }
-    nav.sidebar h2 {
-      margin-bottom: 3rem;
-      font-size: 1.7rem;
-      font-weight: 700;
-      text-align: center;
-      color: #fff;
-    }
-    nav.sidebar a {
-      color: #cbd6e2;
-      text-decoration: none;
-      padding: 0.85rem 1.4rem;
-      border-radius: 8px;
-      margin-bottom: 0.9rem;
-      font-size: 1.05rem;
-      display: block;
-      transition: background-color 0.3s ease;
-    }
-    nav.sidebar a.active,
-    nav.sidebar a:hover {
-      background-color: #1677c1;
-      color: #fff;
-    }
-    main.content {
-      flex: 1;
-      padding: 2.5rem;
-      overflow-y: auto;
-      display: none;
-    }
-    header.topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2.5rem;
-    }
-    header.topbar h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #0a1e33;
-    }
-    header.topbar .user-menu {
-      font-weight: 600;
-      color: #1677c1;
-    }
-    section.card {
-      background-color: #fff;
-      border-radius: 14px;
-      padding: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
-    }
-    section.card h2 {
-      font-size: 1.6rem;
-      color: #0a1e33;
-      margin-bottom: 1rem;
-    }
-    table.user-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1.5rem;
-    }
-    table.user-table th, table.user-table td {
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    table.user-table th {
-      background-color: #e9eff5;
-    }
-    table.user-table td button {
-      padding: 0.3rem 0.6rem;
-      font-size: 0.85rem;
-    }
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .modal form {
-      background: #fff;
-      padding: 2.5rem;
-      border-radius: 10px;
-      width: 400px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    }
-    .modal h2 {
-      margin-bottom: 1.5rem;
-      color: #0a1e33;
-      text-align: center;
-    }
-    .modal label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 600;
-    }
-    .modal input {
-      width: 100%;
-      padding: 0.7rem;
-      margin-top: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .modal button {
-      margin-top: 2rem;
-      width: 100%;
-      padding: 0.9rem;
-      background-color: #1677c1;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .modal button:hover {
-      background-color: #0f5f9c;
-    }
-    .error-msg {
-      color: #d32f2f;
-      margin-top: 0.75rem;
-      font-size: 0.95rem;
-      text-align: center;
-    }
-    .badge {
-      display: inline-block;
-      background: #d32f2f;
-      color: white;
-      padding: 0.3rem 0.6rem;
-      border-radius: 5px;
-      font-size: 0.85rem;
-      margin-left: 0.5rem;
-    }
+    body { background-color: #f8fafc; }
+    .sidebar { height: 100vh; background-color: #001f3f; color: white; padding-top: 20px; }
+    .sidebar a { color: white; display: block; padding: 10px; text-decoration: none; }
+    .sidebar a.active, .sidebar a:hover { background-color: #007bff; color: white; }
+    .header { font-size: 1.5rem; font-weight: bold; }
   </style>
 </head>
 <body>
-  <div id="loginModal" class="modal">
-    <form id="loginForm">
-      <h2>Login zum Kontrollzentrum</h2>
-      <label for="username">Benutzername</label>
-      <input type="text" id="username" required>
-      <label for="password">Passwort</label>
-      <input type="password" id="password" required>
-      <button type="submit">Einloggen</button>
-      <div id="errorMsg" class="error-msg"></div>
-    </form>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 sidebar">
+        <div class="text-center mb-4">
+          <span class="header">TechFlair Inc.</span>
+        </div>
+        <a href="#overview" class="active">Übersicht</a>
+        <a href="#logs">Logs</a>
+        <a href="#users">Benutzerverwaltung</a>
+      </nav>
+      <main class="col-md-10 p-4">
+        <div id="overview">
+          <h2>ADAC-BOT Dashboard</h2>
+          <p><strong>Status:</strong> <span id="api-status">⏳ Überprüfe Verbindung...</span></p>
+          <div id="week-summary" class="card p-3 mt-3">
+            <h5 class="mb-2">Wochenübersicht</h5>
+            <p id="week-stats">Lade...</p>
+          </div>
+        </div>
+
+        <div id="logs" class="mt-4">
+          <h4>Gelöschte Nachrichten (Logs)</h4>
+          <div id="logs-container">Lade...</div>
+        </div>
+
+        <div id="users" class="mt-4">
+          <h4>Benutzerverwaltung</h4>
+          <form id="add-user-form" class="row g-2 mb-3">
+            <div class="col-sm-3"><input name="name" placeholder="Benutzername" class="form-control" required></div>
+            <div class="col-sm-3"><input name="password" placeholder="Passwort" class="form-control" required></div>
+            <div class="col-sm-3"><input name="role" placeholder="Rolle (admin/user)" class="form-control" required></div>
+            <div class="col-sm-3"><button type="submit" class="btn btn-primary">Benutzer anlegen</button></div>
+          </form>
+          <table class="table table-bordered">
+            <thead><tr><th>Name</th><th>Rolle</th><th>Aktion</th></tr></thead>
+            <tbody id="user-list"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
   </div>
 
-  <nav class="sidebar">
-    <h2>TechFlair GmbH</h2>
-    <a data-section="overview" class="active">Übersicht</a>
-    <a data-section="logs">Logs</a>
-    <a data-section="users" class="admin-only">Benutzerverwaltung</a>
-    <a data-section="settings" class="admin-only">Einstellungen</a>
-  </nav>
+<script>
+const API_KEY = 'DEIN_API_KEY_HIER';
+const BASE_URL = 'https://adac-bot-website-api.onrender.com/api';
 
-  <main class="content">
-    <header class="topbar">
-      <h1>ADAC-BOT Dashboard</h1>
-      <div class="user-menu">
-        Angemeldet als: <span id="userRole">Gast</span>
-        <span id="apiStatus" class="badge">Nicht verbunden</span>
-      </div>
-    </header>
+async function fetchWithAuth(url, options = {}) {
+  options.headers = Object.assign(options.headers || {}, {
+    'Authorization': `Bearer ${API_KEY}`
+  });
+  const response = await fetch(url, options);
+  if (!response.ok) throw new Error('Fehler');
+  return response.json();
+}
 
-    <section id="overview" class="card">
-      <h2>Wochenübersicht</h2>
-      <div id="summary">Diese Woche wurden 0 Nachrichten gelöscht (Demo).</div>
-    </section>
+async function checkAPI() {
+  try {
+    await fetchWithAuth(`${BASE_URL}/logs`);
+    document.getElementById('api-status').innerHTML = '<span class="text-success">✔ API verbunden</span>';
+  } catch {
+    document.getElementById('api-status').innerHTML = '<span class="text-danger">✖ API nicht verbunden</span>';
+  }
+}
 
-    <section id="logs" class="card" style="display:none;">
-      <h2>Gelöschte Nachrichten (Logs)</h2>
-      <p id="logsContent">Lade Logdaten...</p>
-    </section>
+async function loadLogs() {
+  try {
+    const res = await fetchWithAuth(`${BASE_URL}/logs`);
+    const logsHTML = res.logs.map(log => `<div>🧾 <strong>${log.author}</strong> – <code>${log.content_hash}</code> (${log.timestamp})</div>`).join('');
+    document.getElementById('logs-container').innerHTML = logsHTML || 'Keine gelöschten Nachrichten.';
+  } catch {
+    document.getElementById('logs-container').innerHTML = '<span class="text-danger">Fehler beim Laden der Logs.</span>';
+  }
+}
 
-    <section id="users" class="card admin-only" style="display:none;">
-      <h2>Benutzerverwaltung</h2>
-      <form id="createUserForm">
-        <label for="newUser">Benutzername</label>
-        <input type="text" id="newUser" required>
-        <label for="newPass">Passwort</label>
-        <input type="password" id="newPass" required>
-        <label for="newRole">Rolle</label>
-        <input type="text" id="newRole" required>
-        <button type="submit">Benutzer anlegen</button>
-      </form>
-      <table class="user-table" id="userTable">
-        <thead><tr><th>Benutzername</th><th>Rolle</th><th>Aktionen</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </section>
+async function loadUsers() {
+  try {
+    const res = await fetchWithAuth(`${BASE_URL}/users`);
+    document.getElementById('user-list').innerHTML = Object.entries(res.users).map(([name, u]) =>
+      `<tr><td>${name}</td><td>${u.role}</td><td>
+         <button class='btn btn-sm btn-danger' onclick='deleteUser("${name}")'>Löschen</button>
+       </td></tr>`).join('');
+  } catch {
+    document.getElementById('user-list').innerHTML = '<tr><td colspan="3">Fehler beim Laden der Nutzer</td></tr>';
+  }
+}
 
-    <section id="settings" class="card admin-only" style="display:none;">
-      <h2>Einstellungen</h2>
-      <p>API-Key: <code id="apiKey">Nicht geladen</code></p>
-      <p>Reporting-Intervall: <code>7 Tage</code></p>
-    </section>
-  </main>
-
-  <script>
-    const loginModal = document.getElementById('loginModal');
-    const loginForm = document.getElementById('loginForm');
-    const mainContent = document.querySelector('main.content');
-    const userTableBody = document.querySelector('#userTable tbody');
-    const users = {
-      admin: { password: 'adminpass', role: 'admin' },
-      user: { password: 'userpass', role: 'user' }
-    };
-
-    function refreshUserTable() {
-      userTableBody.innerHTML = '';
-      for (const [name, data] of Object.entries(users)) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${name}</td>
-          <td>${data.role}</td>
-          <td>
-            <button onclick="changeRole('${name}')">Rolle ändern</button>
-            <button onclick="deleteUser('${name}')">Löschen</button>
-          </td>
-        `;
-        userTableBody.appendChild(row);
-      }
-    }
-
-    function changeRole(name) {
-      const newRole = prompt("Neue Rolle für " + name + ":", users[name].role);
-      if (newRole) {
-        users[name].role = newRole;
-        refreshUserTable();
-      }
-    }
-
-    function deleteUser(name) {
-      if (confirm("Benutzer " + name + " wirklich löschen?")) {
-        delete users[name];
-        refreshUserTable();
-      }
-    }
-
-    loginForm.onsubmit = e => {
-      e.preventDefault();
-      const u = document.getElementById("username").value;
-      const p = document.getElementById("password").value;
-      if (users[u] && users[u].password === p) {
-        loginModal.style.display = 'none';
-        mainContent.style.display = 'block';
-        document.getElementById('userRole').textContent = users[u].role;
-        document.querySelectorAll('.admin-only').forEach(el => {
-          el.style.display = users[u].role === 'admin' ? 'block' : 'none';
-        });
-        document.getElementById("logsContent").textContent = "Keine gelöschten Nachrichten vorhanden.";
-        document.getElementById("apiKey").textContent = "LIVE_KEY_ABC123";
-        document.getElementById("apiStatus").textContent = "Verbunden";
-        document.getElementById("apiStatus").style.backgroundColor = "#388e3c";
-        refreshUserTable();
-      } else {
-        document.getElementById("errorMsg").textContent = 'Ungültige Anmeldedaten';
-      }
-    };
-
-    document.querySelectorAll('nav.sidebar a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.querySelectorAll('nav.sidebar a').forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        const sec = link.dataset.section;
-        document.querySelectorAll('main.content section.card').forEach(s => {
-          s.style.display = s.id === sec ? 'block' : 'none';
-        });
-      });
+async function deleteUser(name) {
+  if (!confirm(`${name} wirklich löschen?`)) return;
+  try {
+    await fetch(`${BASE_URL}/users/${encodeURIComponent(name)}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${API_KEY}` }
     });
+    loadUsers();
+  } catch {
+    alert('Fehler beim Löschen');
+  }
+}
 
-    const createUserForm = document.getElementById('createUserForm');
-    createUserForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const name = document.getElementById('newUser').value;
-      const pw = document.getElementById('newPass').value;
-      const role = document.getElementById('newRole').value;
-      if (!users[name]) {
-        users[name] = { password: pw, role };
-        refreshUserTable();
-        alert('Benutzer erfolgreich angelegt.');
-        createUserForm.reset();
-      } else {
-        alert('Benutzer existiert bereits.');
-      }
+const form = document.getElementById('add-user-form');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+  try {
+    await fetch(`${BASE_URL}/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify(data)
     });
-  </script>
+    form.reset();
+    loadUsers();
+  } catch {
+    alert('Fehler beim Anlegen');
+  }
+});
+
+checkAPI();
+loadLogs();
+loadUsers();
+</script>
 </body>
 </html>

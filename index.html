@@ -11,6 +11,8 @@
     .sidebar a { color: white; display: block; padding: 10px; text-decoration: none; }
     .sidebar a.active, .sidebar a:hover { background-color: #007bff; color: white; }
     .header { font-size: 1.5rem; font-weight: bold; }
+    .admin-only, .overview-only { display: none; }
+    .user-info { font-size: 0.9rem; float: right; color: #555; }
   </style>
 </head>
 <body>
@@ -20,12 +22,14 @@
         <div class="text-center mb-4">
           <span class="header">TechFlair Inc.</span>
         </div>
-        <a href="#overview" class="active">Übersicht</a>
-        <a href="#logs">Logs</a>
-        <a href="#users">Benutzerverwaltung</a>
+        <a href="#overview" class="overview-only">Übersicht</a>
+        <a href="#logs" class="active">Logs</a>
+        <a href="#users" class="admin-only">Benutzerverwaltung</a>
       </nav>
       <main class="col-md-10 p-4">
-        <div id="overview">
+        <div class="user-info" id="user-info">Nicht angemeldet</div>
+
+        <div id="overview" class="overview-only">
           <h2>ADAC-BOT Dashboard</h2>
           <p><strong>Status:</strong> <span id="api-status">⏳ Überprüfe Verbindung...</span></p>
           <div id="week-summary" class="card p-3 mt-3">
@@ -39,12 +43,17 @@
           <div id="logs-container">Lade...</div>
         </div>
 
-        <div id="users" class="mt-4">
+        <div id="users" class="mt-4 admin-only">
           <h4>Benutzerverwaltung</h4>
           <form id="add-user-form" class="row g-2 mb-3">
             <div class="col-sm-3"><input name="name" placeholder="Benutzername" class="form-control" required></div>
             <div class="col-sm-3"><input name="password" placeholder="Passwort" class="form-control" required></div>
-            <div class="col-sm-3"><input name="role" placeholder="Rolle (admin/user)" class="form-control" required></div>
+            <div class="col-sm-3">
+              <select name="role" class="form-control" required>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
             <div class="col-sm-3"><button type="submit" class="btn btn-primary">Benutzer anlegen</button></div>
           </form>
           <table class="table table-bordered">
@@ -58,7 +67,8 @@
 
 <script>
 const API_KEY = 'DEIN_API_KEY_HIER';
-const BASE_URL = 'https://adac-bot-website-api.onrender.com/api';
+const BASE_URL = 'https://adac-bot-website-api.onrender.com';
+let currentUser = null;
 
 async function fetchWithAuth(url, options = {}) {
   options.headers = Object.assign(options.headers || {}, {
@@ -91,6 +101,16 @@ async function loadLogs() {
 async function loadUsers() {
   try {
     const res = await fetchWithAuth(`${BASE_URL}/users`);
+    currentUser = res.current_user || { name: 'Unbekannt', role: 'user' };
+    document.getElementById('user-info').textContent = `Angemeldet als: ${currentUser.name} (${currentUser.role})`;
+
+    if (currentUser.role === 'admin') {
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+      document.querySelectorAll('.overview-only').forEach(el => el.style.display = 'block');
+    } else {
+      document.querySelectorAll('.overview-only').forEach(el => el.style.display = 'none');
+    }
+
     document.getElementById('user-list').innerHTML = Object.entries(res.users).map(([name, u]) =>
       `<tr><td>${name}</td><td>${u.role}</td><td>
          <button class='btn btn-sm btn-danger' onclick='deleteUser("${name}")'>Löschen</button>

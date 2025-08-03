@@ -1,4 +1,4 @@
-html_code = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
@@ -280,7 +280,7 @@ html_code = """<!DOCTYPE html>
   // API-Logs laden
   fetch("https://adac-bot-website-api.onrender.com/logs", {
     headers: {
-      "Authorization": "1804"
+      "Authorization": "HIER_API_KEY_EINTRAGEN"
     }
   })
   .then(response => {
@@ -307,6 +307,38 @@ html_code = """<!DOCTYPE html>
       <p style="color:red;">Fehler: ${error.message}</p>`;
     console.error("Fehler beim Laden der Logs:", error);
   });
+
+  // API-Benutzerliste laden
+  fetch("https://adac-bot-website-api.onrender.com/users", {
+    headers: {
+      "Authorization": "1804"
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Benutzerdaten konnten nicht geladen werden. Status " + response.status);
+    }
+    return response.json();
+  })
+  .then(data => {
+    const userSection = document.querySelector("#users");
+    const users = data.users || [];
+
+    const content = users.length === 0
+      ? "<p>Keine Benutzer gefunden.</p>"
+      : "<ul>" + users.map(user =>
+          `<li>${user.name} – Rolle: ${user.role}</li>`
+        ).join("") + "</ul>";
+
+    userSection.innerHTML = "<h2>Benutzerverwaltung</h2>" + content;
+  })
+  .catch(error => {
+    document.querySelector("#users").innerHTML = `
+      <h2>Benutzerverwaltung</h2>
+      <p style="color:red;">Fehler: ${error.message}</p>`;
+    console.error("Fehler beim Laden der Benutzer:", error);
+  });
+
 </script>
 
 </body>

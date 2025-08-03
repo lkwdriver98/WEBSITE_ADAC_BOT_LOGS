@@ -1,133 +1,111 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ADAC-BOT Dashboard</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; min-height: 100vh; }
-
-    nav.sidebar {
-      width: 240px;
-      background-color: #021e39;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-    }
-    nav.sidebar h2 { margin-bottom: 2rem; text-align: center; }
-    nav.sidebar a {
-      color: #aabac6;
-      text-decoration: none;
-      padding: 0.75rem;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
-      transition: background-color 0.3s;
-    }
-    nav.sidebar a.active, nav.sidebar a:hover {
-      background-color: #0658a6;
-      color: #fff;
-    }
-
-    main.content {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-    }
-
-    header.topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    header.topbar h1 { color: #034a9b; }
-    header.topbar .user-menu { display: flex; gap: 1rem; }
-
-    section.card {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 2rem;
-    }
-
-    .error-msg { color: red; font-size: 0.9rem; margin-top: 0.5rem; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f9; }
+    nav { width: 230px; background: #002244; color: white; height: 100vh; position: fixed; padding: 20px; }
+    nav h2 { margin-bottom: 20px; }
+    nav a { display: block; color: #aab; margin: 10px 0; text-decoration: none; }
+    nav a.active, nav a:hover { color: white; font-weight: bold; }
+    main { margin-left: 230px; padding: 20px; }
+    section { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 0 5px #ccc; margin-bottom: 20px; }
+    .hidden { display: none; }
+    .error { color: red; }
+    .api-status { float: right; color: red; font-size: 0.9em; }
   </style>
 </head>
 <body>
 
-<nav class="sidebar">
+<!-- Sidebar -->
+<nav>
   <h2>TechFlair Inc.</h2>
-  <a data-section="overview" class="active">Übersicht</a>
-  <a data-section="logs">Logs</a>
-  <a data-section="users" class="admin-only">Benutzerverwaltung</a>
+  <a href="#" onclick="showSection('overview')">Übersicht</a>
+  <a href="#" onclick="showSection('logs')">Logs</a>
+  <a href="#" onclick="showSection('users')">Benutzerverwaltung</a>
 </nav>
 
-<main class="content">
-  <header class="topbar">
-    <h1>ADAC-BOT Dashboard</h1>
-    <div class="user-menu">
-      <span id="apiStatus">🔄 Verbindung prüfen...</span>
-      <span id="userRole">User</span>
-    </div>
-  </header>
+<!-- Main content -->
+<main>
+  <h1>ADAC-BOT Dashboard <span id="apiStatus" class="api-status">❌ API nicht verbunden</span></h1>
 
-  <section id="overview" class="card">
+  <section id="overview">
     <h2>Wochenübersicht</h2>
-    <p>Diese Woche wurden 0 Nachrichten gelöscht (Demo).</p>
+    <p id="summary">Diese Woche wurden 0 Nachrichten gelöscht (Demo).</p>
   </section>
 
-  <section id="logs" class="card" style="display:none;">
+  <section id="logs" class="hidden">
     <h2>Gelöschte Nachrichten (Logs)</h2>
-    <p>Lade...</p>
+    <p id="logsData">Lade...</p>
   </section>
 
-  <section id="users" class="card admin-only" style="display:none;">
+  <section id="users" class="hidden">
     <h2>Benutzerverwaltung</h2>
-    <p>Lade...</p>
+    <p id="usersData">Lade...</p>
   </section>
 </main>
 
 <script>
-document.querySelectorAll('nav.sidebar a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelectorAll('nav.sidebar a').forEach(l => l.classList.remove('active'));
-    link.classList.add('active');
-    const sec = link.dataset.section;
-    document.querySelectorAll('main.content section.card').forEach(s => {
-      s.style.display = s.id === sec ? 'block' : 'none';
-    });
-  });
-});
+const API_URL = "https://adac-bot-website-api.onrender.com";
+const API_KEY = "1804";
 
-// API-Statusanzeige & Logs
-const apiStatus = document.getElementById("apiStatus");
-fetch("https://adac-bot-website-api.onrender.com/logs", {
-  headers: { "Authorization": "1804" }
-})
-.then(response => {
-  if (!response.ok) throw new Error("Fehler: " + response.status);
-  apiStatus.textContent = "✅ API verbunden";
-  return response.json();
-})
-.then(data => {
-  const logContainer = document.querySelector("#logs");
-  const logs = data.logs || [];
-  const content = logs.length === 0
-    ? "<p>Keine gelöschten Nachrichten gefunden.</p>"
-    : "<ul>" + logs.map(log =>
-        `<li>[${log.time}] ${log.user} hat "${log.message}" gelöscht</li>`
-      ).join("") + "</ul>";
-  logContainer.innerHTML = "<h2>Gelöschte Nachrichten (Logs)</h2>" + content;
-})
-.catch(error => {
-  apiStatus.textContent = "❌ API nicht verbunden";
-  document.querySelector("#logs").innerHTML = `
-    <h2>Gelöschte Nachrichten (Logs)</h2>
-    <p class="error-msg">${error.message}</p>`;
-});
+// Navigation
+function showSection(id) {
+  document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+
+// Testverbindung & Logs laden
+function loadLogs() {
+  fetch(`${API_URL}/logs`, {
+    headers: { "Authorization": API_KEY }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("API Fehler");
+    document.getElementById("apiStatus").textContent = "✅ API verbunden";
+    document.getElementById("apiStatus").style.color = "green";
+    return res.json();
+  })
+  .then(data => {
+    const logs = data.logs || [];
+    document.getElementById("logsData").innerHTML = logs.length === 0
+      ? "<p>Keine gelöschten Nachrichten gefunden.</p>"
+      : "<ul>" + logs.map(log =>
+          `<li>[${log.time}] ${log.user} löschte "${log.message}"</li>`).join("") + "</ul>";
+  })
+  .catch(err => {
+    document.getElementById("logsData").innerHTML = `<p class="error">Failed to fetch</p>`;
+    console.error(err);
+  });
+}
+
+// Benutzer laden
+function loadUsers() {
+  fetch(`${API_URL}/users`, {
+    headers: { "Authorization": API_KEY }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("API Fehler");
+    return res.json();
+  })
+  .then(data => {
+    const users = data.users || [];
+    document.getElementById("usersData").innerHTML = users.length === 0
+      ? "<p>Keine Benutzer gefunden.</p>"
+      : "<ul>" + users.map(user =>
+          `<li>${user.name} – Rolle: ${user.role}</li>`).join("") + "</ul>";
+  })
+  .catch(err => {
+    document.getElementById("usersData").innerHTML = `<p class="error">Fehler: ${err.message}</p>`;
+    console.error(err);
+  });
+}
+
+// Initiale Aufrufe
+loadLogs();
+loadUsers();
 </script>
 
 </body>

@@ -3,90 +3,183 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ADAC-BOT Dashboard</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap">
+  <title>TechFlair Enterprise Control Suite</title>
   <style>
-    body { margin: 0; font-family: Roboto, sans-serif; background: #f4f6f9; }
-    .modal, .hidden { display: none; }
-    .modal.active { display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-    form { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    input, select, button { width: 100%; margin-top: 1rem; padding: 0.5rem; }
-    nav { width: 200px; background: #021e39; color: white; height: 100vh; position: fixed; }
-    nav a { display: block; padding: 1rem; color: #ccc; text-decoration: none; }
-    nav a.active, nav a:hover { background: #0658a6; color: white; }
-    main { margin-left: 200px; padding: 2rem; }
-    .card { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
-    .admin-only { display: none; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa; color: #333; display: flex; min-height: 100vh; }
+
+    nav.sidebar {
+      width: 260px;
+      background-color: #011628;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem;
+    }
+    nav.sidebar h2 {
+      margin-bottom: 2.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    nav.sidebar a {
+      color: #c2cad5;
+      text-decoration: none;
+      padding: 0.75rem 1.2rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+      display: block;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    nav.sidebar a.active,
+    nav.sidebar a:hover {
+      background-color: #00558a;
+      color: #fff;
+    }
+
+    main.content {
+      flex: 1;
+      padding: 2.5rem;
+      overflow-y: auto;
+      background-color: #e9edf3;
+      display: none;
+    }
+    header.topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+    header.topbar h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #023e7d;
+    }
+    header.topbar .user-menu {
+      font-weight: 500;
+      color: #023e7d;
+    }
+
+    section.card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+    section.card h2 {
+      font-size: 1.5rem;
+      color: #023e7d;
+      margin-bottom: 1.2rem;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal form {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 10px;
+      width: 360px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .modal h2 {
+      margin-bottom: 1.5rem;
+      color: #011628;
+      text-align: center;
+    }
+    .modal label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+    .modal input,
+    .modal select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.4rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .modal button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.9rem;
+      background-color: #0064b1;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .modal button:hover {
+      background-color: #004f91;
+    }
+    .error-msg {
+      color: #d32f2f;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
+  <div id="loginModal" class="modal">
+    <form id="loginForm">
+      <h2>Login</h2>
+      <label for="username">Benutzername</label>
+      <input type="text" id="username" required>
+      <label for="password">Passwort</label>
+      <input type="password" id="password" required>
+      <button type="submit">Einloggen</button>
+      <div id="errorMsg" class="error-msg"></div>
+    </form>
+  </div>
 
-<!-- LOGIN MODAL -->
-<div id="loginModal" class="modal active">
-  <form id="loginForm">
-    <h2>Login</h2>
-    <input type="text" id="username" placeholder="Benutzername" required>
-    <input type="password" id="password" placeholder="Passwort" required>
-    <button type="submit">Einloggen</button>
-    <p id="errorMsg" style="color:red;"></p>
-  </form>
-</div>
+  <nav class="sidebar">
+    <h2>TechFlair Inc.</h2>
+    <a data-section="overview" class="active">Dashboard</a>
+    <a data-section="logs">Logs</a>
+    <a data-section="users" class="admin-only">Benutzerverwaltung</a>
+    <a data-section="settings" class="admin-only">Einstellungen</a>
+  </nav>
 
-<!-- SIDEBAR -->
-<nav>
-  <h2 style="text-align:center; padding:1rem 0;">ADAC-BOT</h2>
-  <a href="#" class="nav-link active" data-section="overview">Übersicht</a>
-  <a href="#" class="nav-link" data-section="logs">Logs</a>
-  <a href="#" class="nav-link admin-only" data-section="users">Benutzer</a>
-</nav>
+  <main class="content">
+    <header class="topbar">
+      <h1>ADAC-BOT Dashboard</h1>
+      <div class="user-menu">
+        <span id="userRole">Gast</span>
+      </div>
+    </header>
 
-<!-- MAIN CONTENT -->
-<main>
-  <div id="overview" class="card">Willkommen! Übersicht folgt hier.</div>
-  <div id="logs" class="card hidden">Lade Logs...</div>
-  <div id="users" class="card hidden admin-only">Benutzerverwaltung</div>
-</main>
+    <section id="overview" class="card">
+      <h2>Systemübersicht</h2>
+      <div id="summary">Diese Woche wurden 0 Nachrichten gelöscht (Demo).</div>
+    </section>
 
-<script>
-let userRole = null;
+    <section id="logs" class="card" style="display:none;">
+      <h2>Gelöschte Nachrichten (Logs)</h2>
+      <p>Keine API aktiv – Demo Ansicht</p>
+    </section>
 
-async function loginUser(username, password) {
-  const res = await fetch("https://adac-bot-website-api.onrender.com/auth", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password })
-  });
-  if (!res.ok) throw new Error("Login fehlgeschlagen");
-  return await res.json();
-}
+    <section id="users" class="card admin-only" style="display:none;">
+      <h2>Benutzerverwaltung</h2>
+      <p>Liste der registrierten Benutzer.</p>
+    </section>
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  try {
-    const data = await loginUser(username, password);
-    userRole = data.role;
-    document.getElementById("loginModal").classList.remove("active");
-    if (userRole === "admin") {
-      document.querySelectorAll(".admin-only").forEach(el => el.style.display = "block");
-    }
-  } catch (err) {
-    document.getElementById("errorMsg").textContent = "Ungültige Zugangsdaten.";
-  }
-});
-
-document.querySelectorAll(".nav-link").forEach(link => {
-  link.addEventListener("click", () => {
-    document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
-    link.classList.add("active");
-    const section = link.getAttribute("data-section");
-    document.querySelectorAll("main > div").forEach(div => div.classList.add("hidden"));
-    document.getElementById(section).classList.remove("hidden");
-  });
-});
-</script>
-
+    <section id="settings" class="card admin-only" style="display:none;">
+      <h2>Einstellungen</h2>
+      <p>API-Key: <code>DEMO_KEY</code></p>
+      <p>Reporting-Intervall: <code>7 Tage</code></p>
+    </section>
+  </main>
 </body>
 </html>

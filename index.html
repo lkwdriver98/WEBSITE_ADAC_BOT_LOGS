@@ -76,6 +76,23 @@
       color: #0a1e33;
       margin-bottom: 1rem;
     }
+    table.user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+    }
+    table.user-table th, table.user-table td {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    table.user-table th {
+      background-color: #e9eff5;
+    }
+    table.user-table td button {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+    }
     .modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -191,7 +208,10 @@
         <input type="text" id="newRole" required>
         <button type="submit">Benutzer anlegen</button>
       </form>
-      <p id="usersContent">Lade Benutzerdaten...</p>
+      <table class="user-table" id="userTable">
+        <thead><tr><th>Benutzername</th><th>Rolle</th><th>Aktionen</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </section>
 
     <section id="settings" class="card admin-only" style="display:none;">
@@ -205,10 +225,42 @@
     const loginModal = document.getElementById('loginModal');
     const loginForm = document.getElementById('loginForm');
     const mainContent = document.querySelector('main.content');
+    const userTableBody = document.querySelector('#userTable tbody');
     const users = {
       admin: { password: 'adminpass', role: 'admin' },
       user: { password: 'userpass', role: 'user' }
     };
+
+    function refreshUserTable() {
+      userTableBody.innerHTML = '';
+      for (const [name, data] of Object.entries(users)) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${data.role}</td>
+          <td>
+            <button onclick="changeRole('${name}')">Rolle ändern</button>
+            <button onclick="deleteUser('${name}')">Löschen</button>
+          </td>
+        `;
+        userTableBody.appendChild(row);
+      }
+    }
+
+    function changeRole(name) {
+      const newRole = prompt("Neue Rolle für " + name + ":", users[name].role);
+      if (newRole) {
+        users[name].role = newRole;
+        refreshUserTable();
+      }
+    }
+
+    function deleteUser(name) {
+      if (confirm("Benutzer " + name + " wirklich löschen?")) {
+        delete users[name];
+        refreshUserTable();
+      }
+    }
 
     loginForm.onsubmit = e => {
       e.preventDefault();
@@ -225,7 +277,7 @@
         document.getElementById("apiKey").textContent = "LIVE_KEY_ABC123";
         document.getElementById("apiStatus").textContent = "Verbunden";
         document.getElementById("apiStatus").style.backgroundColor = "#388e3c";
-        document.getElementById("usersContent").textContent = "- admin (admin)\n- user (user)";
+        refreshUserTable();
       } else {
         document.getElementById("errorMsg").textContent = 'Ungültige Anmeldedaten';
       }
@@ -250,7 +302,7 @@
       const role = document.getElementById('newRole').value;
       if (!users[name]) {
         users[name] = { password: pw, role };
-        document.getElementById('usersContent').textContent += `\n- ${name} (${role})`;
+        refreshUserTable();
         alert('Benutzer erfolgreich angelegt.');
         createUserForm.reset();
       } else {

@@ -6,44 +6,47 @@
   <title>TechFlair Enterprise Control Suite</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa; color: #333; display: flex; min-height: 100vh; }
-
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
     nav.sidebar {
-      width: 260px;
-      background-color: #011628;
+      width: 280px;
+      background-color: #0a1e33;
       color: #fff;
       display: flex;
       flex-direction: column;
       padding: 2rem 1rem;
     }
     nav.sidebar h2 {
-      margin-bottom: 2.5rem;
-      font-size: 1.5rem;
-      font-weight: 600;
+      margin-bottom: 3rem;
+      font-size: 1.7rem;
+      font-weight: 700;
       text-align: center;
+      color: #fff;
     }
     nav.sidebar a {
-      color: #c2cad5;
+      color: #cbd6e2;
       text-decoration: none;
-      padding: 0.75rem 1.2rem;
-      border-radius: 6px;
-      margin-bottom: 0.75rem;
-      font-size: 1rem;
+      padding: 0.85rem 1.4rem;
+      border-radius: 8px;
+      margin-bottom: 0.9rem;
+      font-size: 1.05rem;
       display: block;
-      cursor: pointer;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      transition: background-color 0.3s ease;
     }
     nav.sidebar a.active,
     nav.sidebar a:hover {
-      background-color: #00558a;
+      background-color: #1677c1;
       color: #fff;
     }
-
     main.content {
       flex: 1;
       padding: 2.5rem;
       overflow-y: auto;
-      background-color: #e9edf3;
       display: none;
     }
     header.topbar {
@@ -53,47 +56,45 @@
       margin-bottom: 2.5rem;
     }
     header.topbar h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #023e7d;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0a1e33;
     }
     header.topbar .user-menu {
-      font-weight: 500;
-      color: #023e7d;
+      font-weight: 600;
+      color: #1677c1;
     }
-
     section.card {
       background-color: #fff;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       margin-bottom: 2rem;
     }
     section.card h2 {
-      font-size: 1.5rem;
-      color: #023e7d;
-      margin-bottom: 1.2rem;
+      font-size: 1.6rem;
+      color: #0a1e33;
+      margin-bottom: 1rem;
     }
-
     .modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.6);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 9999;
     }
     .modal form {
       background: #fff;
       padding: 2.5rem;
       border-radius: 10px;
-      width: 360px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      width: 400px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     }
     .modal h2 {
       margin-bottom: 1.5rem;
-      color: #011628;
+      color: #0a1e33;
       text-align: center;
     }
     .modal label {
@@ -101,27 +102,26 @@
       margin-top: 1rem;
       font-weight: 600;
     }
-    .modal input,
-    .modal select {
+    .modal input {
       width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.4rem;
+      padding: 0.7rem;
+      margin-top: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
     .modal button {
-      margin-top: 1.5rem;
+      margin-top: 2rem;
       width: 100%;
       padding: 0.9rem;
-      background-color: #0064b1;
+      background-color: #1677c1;
       color: #fff;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      border-radius: 6px;
       font-size: 1rem;
+      cursor: pointer;
     }
     .modal button:hover {
-      background-color: #004f91;
+      background-color: #0f5f9c;
     }
     .error-msg {
       color: #d32f2f;
@@ -134,7 +134,7 @@
 <body>
   <div id="loginModal" class="modal">
     <form id="loginForm">
-      <h2>Login</h2>
+      <h2>Login zum Kontrollzentrum</h2>
       <label for="username">Benutzername</label>
       <input type="text" id="username" required>
       <label for="password">Passwort</label>
@@ -145,8 +145,8 @@
   </div>
 
   <nav class="sidebar">
-    <h2>TechFlair Inc.</h2>
-    <a data-section="overview" class="active">Dashboard</a>
+    <h2>TechFlair GmbH</h2>
+    <a data-section="overview" class="active">Übersicht</a>
     <a data-section="logs">Logs</a>
     <a data-section="users" class="admin-only">Benutzerverwaltung</a>
     <a data-section="settings" class="admin-only">Einstellungen</a>
@@ -156,28 +156,28 @@
     <header class="topbar">
       <h1>ADAC-BOT Dashboard</h1>
       <div class="user-menu">
-        <span id="userRole">Gast</span>
+        Angemeldet als: <span id="userRole">Gast</span>
       </div>
     </header>
 
     <section id="overview" class="card">
-      <h2>Systemübersicht</h2>
+      <h2>Wochenübersicht</h2>
       <div id="summary">Diese Woche wurden 0 Nachrichten gelöscht (Demo).</div>
     </section>
 
     <section id="logs" class="card" style="display:none;">
       <h2>Gelöschte Nachrichten (Logs)</h2>
-      <p>Keine API aktiv – Demo Ansicht</p>
+      <p id="logsContent">Lade Logdaten...</p>
     </section>
 
     <section id="users" class="card admin-only" style="display:none;">
       <h2>Benutzerverwaltung</h2>
-      <p>Liste der registrierten Benutzer.</p>
+      <p id="usersContent">Lade Benutzerdaten...</p>
     </section>
 
     <section id="settings" class="card admin-only" style="display:none;">
       <h2>Einstellungen</h2>
-      <p>API-Key: <code>DEMO_KEY</code></p>
+      <p>API-Key: <code id="apiKey">Nicht geladen</code></p>
       <p>Reporting-Intervall: <code>7 Tage</code></p>
     </section>
   </main>
@@ -186,7 +186,6 @@
     const loginModal = document.getElementById('loginModal');
     const loginForm = document.getElementById('loginForm');
     const mainContent = document.querySelector('main.content');
-
     const users = {
       admin: { password: 'adminpass', role: 'admin' },
       user: { password: 'userpass', role: 'user' }
@@ -203,6 +202,10 @@
         document.querySelectorAll('.admin-only').forEach(el => {
           el.style.display = users[u].role === 'admin' ? 'block' : 'none';
         });
+        // Demo placeholder
+        document.getElementById("logsContent").textContent = "Keine gelöschten Nachrichten vorhanden.";
+        document.getElementById("usersContent").textContent = "3 Benutzer geladen (Demo).";
+        document.getElementById("apiKey").textContent = "LIVE_KEY_ABC123";
       } else {
         document.getElementById("errorMsg").textContent = 'Ungültige Anmeldedaten';
       }

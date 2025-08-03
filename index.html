@@ -181,5 +181,43 @@
       <p>Reporting-Intervall: <code>7 Tage</code></p>
     </section>
   </main>
+
+  <script>
+    const loginModal = document.getElementById('loginModal');
+    const loginForm = document.getElementById('loginForm');
+    const mainContent = document.querySelector('main.content');
+
+    const users = {
+      admin: { password: 'adminpass', role: 'admin' },
+      user: { password: 'userpass', role: 'user' }
+    };
+
+    loginForm.onsubmit = e => {
+      e.preventDefault();
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
+      if (users[u] && users[u].password === p) {
+        loginModal.style.display = 'none';
+        mainContent.style.display = 'block';
+        document.getElementById('userRole').textContent = users[u].role;
+        document.querySelectorAll('.admin-only').forEach(el => {
+          el.style.display = users[u].role === 'admin' ? 'block' : 'none';
+        });
+      } else {
+        document.getElementById("errorMsg").textContent = 'Ungültige Anmeldedaten';
+      }
+    };
+
+    document.querySelectorAll('nav.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('nav.sidebar a').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        const sec = link.dataset.section;
+        document.querySelectorAll('main.content section.card').forEach(s => {
+          s.style.display = s.id === sec ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
 </body>
 </html>

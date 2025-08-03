@@ -1,197 +1,221 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>ADAC-BOT Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; display: flex; min-height: 100vh; }
-    nav.sidebar {
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f0f2f5;
+    }
+    .sidebar {
+      width: 240px;
       background: #021e39;
       color: #fff;
-      width: 240px;
       padding: 1rem;
+      display: flex;
+      flex-direction: column;
     }
-    nav.sidebar h2 { text-align: center; margin-bottom: 2rem; }
-    nav.sidebar a {
-      display: block; color: #aabac6; padding: 0.75rem 1rem;
-      text-decoration: none; margin-bottom: 0.5rem; border-radius: 4px;
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 2rem;
     }
-    nav.sidebar a.active, nav.sidebar a:hover {
-      background: #0658a6; color: #fff;
+    .sidebar a {
+      color: #aabac6;
+      padding: 0.75rem;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-bottom: 0.5rem;
+      display: block;
     }
-    main.content {
-      flex: 1; padding: 2rem; display: none;
-      background-color: #f5f8fc;
+    .sidebar a.active,
+    .sidebar a:hover {
+      background-color: #0658a6;
+      color: white;
+    }
+    main {
+      flex: 1;
+      padding: 2rem;
+      display: none;
     }
     .card {
-      background: white; border-radius: 8px;
-      padding: 1.5rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 2rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
     }
     .modal {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-      display: flex; justify-content: center; align-items: center;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
     }
     .modal form {
-      background: white; padding: 2rem; border-radius: 8px; width: 300px;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 300px;
     }
-    .modal input, .modal select {
-      width: 100%; padding: 0.5rem; margin-bottom: 1rem;
+    input, select {
+      width: 100%;
+      margin: 0.5rem 0 1rem;
+      padding: 0.5rem;
     }
-    .modal button {
-      width: 100%; padding: 0.75rem; background: #034a9b;
-      color: white; border: none; border-radius: 4px;
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #034a9b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    .admin-only { display: none; }
-    .error-msg { color: red; text-align: center; }
+    .error-msg {
+      color: red;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
 
-<!-- Login Modal -->
 <div class="modal" id="loginModal">
   <form id="loginForm">
     <h2>Login</h2>
-    <input type="text" id="username" placeholder="Benutzername" required>
-    <input type="password" id="password" placeholder="Passwort" required>
+    <label>Benutzername</label>
+    <input type="text" id="username" required />
+    <label>Passwort</label>
+    <input type="password" id="password" required />
     <button type="submit">Einloggen</button>
-    <div class="error-msg" id="errorMsg"></div>
-    <p style="text-align:center"><a href="#" id="showRegister">Noch kein Account?</a></p>
+    <p class="error-msg" id="errorMsg"></p>
+    <p style="text-align:center;"><a href="#" id="showRegister">Registrieren</a></p>
   </form>
 </div>
 
-<!-- Register Modal -->
-<div class="modal" id="registerModal" style="display:none;">
+<div class="modal" id="registerModal" style="display: none;">
   <form id="registerForm">
     <h2>Registrieren</h2>
-    <input type="text" id="regUsername" placeholder="Benutzername" required>
-    <input type="password" id="regPassword" placeholder="Passwort" required>
+    <label>Benutzername</label>
+    <input type="text" id="regUsername" required />
+    <label>Passwort</label>
+    <input type="password" id="regPassword" required />
+    <label>Rolle</label>
     <select id="regRole">
       <option value="user">User</option>
       <option value="admin">Admin</option>
     </select>
     <button type="submit">Registrieren</button>
-    <div class="error-msg" id="regMsg"></div>
-    <p style="text-align:center"><a href="#" id="showLogin">Zurück zum Login</a></p>
+    <p class="error-msg" id="regMsg"></p>
+    <p style="text-align:center;"><a href="#" id="showLogin">Zurück zum Login</a></p>
   </form>
 </div>
 
-<!-- Sidebar -->
-<nav class="sidebar">
+<div class="sidebar">
   <h2>TechFlair Inc.</h2>
-  <a data-section="overview" class="active">Übersicht</a>
-  <a data-section="logs">Logs</a>
-  <a data-section="users" class="admin-only">Benutzerverwaltung</a>
-</nav>
+  <a href="#" class="active" data-section="overview">Übersicht</a>
+  <a href="#" data-section="logs">Logs</a>
+  <a href="#" data-section="users" class="admin-only">Benutzerverwaltung</a>
+</div>
 
-<!-- Main Content -->
-<main class="content">
-  <section id="overview" class="card">
-    <h2>Wochenübersicht</h2>
-    <div id="summary">Diese Woche wurden 0 Nachrichten gelöscht (Demo).</div>
+<main>
+  <header>
+    <h1>ADAC-BOT Dashboard</h1>
+    <span id="userRole"></span>
+  </header>
+
+  <section class="card" id="overview">
+    <h3>Übersicht</h3>
+    <p>Diese Woche wurden 0 Nachrichten gelöscht (Demo).</p>
   </section>
 
-  <section id="logs" class="card" style="display:none;">
-    <h2>Gelöschte Nachrichten (Logs)</h2>
-    <div id="logContent">Lade...</div>
+  <section class="card" id="logs" style="display:none;">
+    <h3>Logs</h3>
+    <p>API nicht verbunden (Demo)</p>
   </section>
 
-  <section id="users" class="card admin-only" style="display:none;">
-    <h2>Benutzerverwaltung</h2>
-    <div id="userContent">Lade...</div>
+  <section class="card admin-only" id="users" style="display:none;">
+    <h3>Benutzerverwaltung</h3>
+    <p>Keine Benutzer geladen (Demo)</p>
   </section>
 </main>
 
 <script>
-const loginModal = document.getElementById('loginModal');
-const registerModal = document.getElementById('registerModal');
-const API_URL = "https://adac-bot-website-api.onrender.com";
-const API_KEY = "1804";
+  const users = {
+    admin: { password: 'adminpass', role: 'admin' },
+    user: { password: 'userpass', role: 'user' }
+  };
 
-loginModal.style.display = 'flex';
-document.querySelector('main.content').style.display = 'none';
+  const loginModal = document.getElementById('loginModal');
+  const registerModal = document.getElementById('registerModal');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
 
-document.getElementById('showRegister').onclick = e => {
-  e.preventDefault();
-  loginModal.style.display = 'none';
-  registerModal.style.display = 'flex';
-};
-
-document.getElementById('showLogin').onclick = e => {
-  e.preventDefault();
-  registerModal.style.display = 'none';
-  loginModal.style.display = 'flex';
-};
-
-document.getElementById('loginForm').onsubmit = async e => {
-  e.preventDefault();
-  const u = username.value.trim();
-  const p = password.value.trim();
-
-  const res = await fetch(`${API_URL}/users`, {
-    headers: { "Authorization": API_KEY }
-  });
-  const data = await res.json();
-  const user = data.users.find(user => user.username === u && user.password === p);
-
-  if (user) {
+  document.getElementById('showRegister').onclick = e => {
+    e.preventDefault();
     loginModal.style.display = 'none';
-    document.querySelector('main.content').style.display = 'block';
+    registerModal.style.display = 'flex';
+  };
 
-    if (user.role === 'admin') {
-      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+  document.getElementById('showLogin').onclick = e => {
+    e.preventDefault();
+    registerModal.style.display = 'none';
+    loginModal.style.display = 'flex';
+  };
+
+  loginForm.onsubmit = e => {
+    e.preventDefault();
+    const u = username.value;
+    const p = password.value;
+    const user = users[u];
+    if (user && user.password === p) {
+      loginModal.style.display = 'none';
+      document.querySelector('main').style.display = 'block';
+      document.getElementById('userRole').textContent = user.role;
+      document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = user.role === 'admin' ? 'block' : 'none';
+      });
+    } else {
+      document.getElementById('errorMsg').textContent = 'Ungültige Anmeldedaten';
     }
+  };
 
-    // Lade Logs
-    fetch(`${API_URL}/logs`, {
-      headers: { "Authorization": API_KEY }
-    })
-    .then(r => r.json())
-    .then(d => {
-      const logs = d.logs || [];
-      document.getElementById("logContent").innerHTML =
-        logs.length === 0
-          ? "<p>Keine gelöschten Nachrichten gefunden.</p>"
-          : "<ul>" + logs.map(l =>
-              `<li>[${l.time}] ${l.user} hat "${l.message}" gelöscht</li>`
-            ).join("") + "</ul>";
+  registerForm.onsubmit = e => {
+    e.preventDefault();
+    const u = regUsername.value;
+    const p = regPassword.value;
+    const r = regRole.value;
+    users[u] = { password: p, role: r };
+    regMsg.textContent = 'Erfolgreich registriert.';
+    setTimeout(() => {
+      registerModal.style.display = 'none';
+      loginModal.style.display = 'flex';
+      regMsg.textContent = '';
+    }, 1000);
+  };
+
+  document.querySelectorAll('.sidebar a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.sidebar a').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      const section = link.dataset.section;
+      document.querySelectorAll('main .card').forEach(card => {
+        card.style.display = card.id === section ? 'block' : 'none';
+      });
     });
-
-    // Lade Benutzerliste
-    fetch(`${API_URL}/users`, {
-      headers: { "Authorization": API_KEY }
-    })
-    .then(r => r.json())
-    .then(d => {
-      const users = d.users || [];
-      document.getElementById("userContent").innerHTML =
-        users.length === 0
-          ? "<p>Keine Benutzer gefunden.</p>"
-          : "<ul>" + users.map(u =>
-              `<li>${u.username} – Rolle: ${u.role}</li>`
-            ).join("") + "</ul>";
-    });
-
-  } else {
-    document.getElementById("errorMsg").textContent = "Login fehlgeschlagen";
-  }
-};
-
-document.getElementById('registerForm').onsubmit = async e => {
-  e.preventDefault();
-  const u = regUsername.value.trim();
-  const p = regPassword.value.trim();
-  const r = regRole.value;
-
-  const res = await fetch(`${API_URL}/users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": API_KEY
-    },
-    body: JSON.stringify({ name: u, password: p, role: r })
   });
+</script>
 
-  if (res.ok) {
-    regMsg.style.color = "green
+</body>
+</html>
